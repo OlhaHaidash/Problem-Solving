@@ -27,7 +27,9 @@ Table of Contents
   <summary>Find Customer Referee ✅</summary>
   
   ```sql
-
+SELECT name
+FROM customer
+WHERE referee_id <> 2 OR referee_id IS NULL
   ```
 
 </details>
@@ -36,7 +38,9 @@ Table of Contents
   <summary>Big Countries ✅</summary>
   
   ```sql
-
+SELECT name, population, area
+FROM world
+WHERE area >= 3000000 OR population >=25000000
   ```
 
 </details>
@@ -45,7 +49,9 @@ Table of Contents
   <summary>Article Views I ✅</summary>
   
   ```sql
-
+SELECT DISTINCT(author_id) as id
+FROM views
+WHERE author_id = viewer_id
   ```
 
 </details>
@@ -54,7 +60,9 @@ Table of Contents
   <summary>Invalid Tweets ✅</summary>
   
   ```sql
-
+SELECT tweet_id
+FROM tweets
+WHERE LENGTH(content) > 15
   ```
 
 </details>
@@ -65,7 +73,9 @@ Table of Contents
   <summary>Replace Employee ID With The Unique Identifier ✅</summary>  
   
   ```sql
-
+SELECT eu.unique_id, e.name
+FROM Employees e 
+LEFT JOIN EmployeeUNI eu ON e.id = eu.id;
   ```
 
 </details>
@@ -74,7 +84,9 @@ Table of Contents
   <summary>Product Sales Analysis I ✅</summary>  
   
   ```sql
-
+SELECT product_name, year, price
+FROM sales s 
+LEFT JOIN product p USING(product_id)
   ```
 
 </details>
@@ -83,7 +95,11 @@ Table of Contents
   <summary>Customer Who Visited but Did Not Make Any Transactions ✅</summary>  
   
   ```sql
-
+SELECT customer_id, COUNT(*) AS count_no_trans
+FROM visits LEFT JOIN transactions USING(visit_id)
+WHERE transaction_id IS NULL
+GROUP BY customer_id
+ORDER BY count_no_trans
   ```
 
 </details>
