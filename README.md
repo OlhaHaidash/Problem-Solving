@@ -157,7 +157,13 @@ WHERE w1.temperature > w2.temperature;
   <summary>Confirmation Rate 🔲</summary>  
   
   ```sql
-
+SELECT 
+        user_id,
+        ROUND(SUM(CASE WHEN action = 'confirmed' THEN 1 ELSE 0 END) :: numeric
+        / COUNT(*), 2) AS confirmation_rate
+FROM signups s
+LEFT JOIN confirmations c USING (user_id)
+GROUP BY 1
   ```
 
 </details>
@@ -168,7 +174,10 @@ WHERE w1.temperature > w2.temperature;
   <summary>Not Boring Movies ✅</summary>  
   
   ```sql
-
+SELECT *
+FROM cinema
+WHERE id % 2 = 1 AND LOWER(description) NOT LIKE 'boring'
+ORDER BY rating DESC
   ```
 
 </details>
@@ -177,7 +186,11 @@ WHERE w1.temperature > w2.temperature;
   <summary>Average Selling Price ✅</summary>  
   
   ```sql
-
+SELECT p. product_id, 
+        COALESCE(ROUND(SUM(price * units) :: numeric /SUM(units),2),0) AS average_price
+FROM prices p
+LEFT JOIN unitssold u ON p.product_id=u.product_id AND purchase_date >= start_date AND purchase_date <= end_date
+GROUP BY 1
   ```
 
 </details>
@@ -186,7 +199,10 @@ WHERE w1.temperature > w2.temperature;
   <summary>Project Employees I ✅</summary>  
   
   ```sql
-
+SELECT p.project_id, ROUND(AVG(experience_years), 2) AS average_years
+FROM project p
+LEFT JOIN employee e USING(employee_id)
+GROUP BY 1
   ```
 
 </details>
