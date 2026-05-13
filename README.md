@@ -211,7 +211,12 @@ GROUP BY 1
   <summary>Percentage of Users Attended a Contest ✅</summary>  
   
   ```sql
-
+SELECT contest_id,
+        ROUND(COUNT(r.user_id) :: numeric  / (SELECT COUNT(*) FROM users) * 100,2) AS percentage
+FROM register r
+LEFT JOIN users USING(user_id)
+GROUP BY contest_id
+ORDER BY 2 DESC, 1
   ```
 
 </details>
