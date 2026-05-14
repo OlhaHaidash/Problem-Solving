@@ -154,7 +154,7 @@ WHERE w1.temperature > w2.temperature;
 </details>
 
 <details>
-  <summary>Confirmation Rate 🔲</summary>  
+  <summary>Confirmation Rate ✅</summary>  
   
   ```sql
 SELECT 
@@ -186,7 +186,7 @@ ORDER BY rating DESC
   <summary>Average Selling Price ✅</summary>  
   
   ```sql
-SELECT p. product_id, 
+SELECT p.product_id, 
         COALESCE(ROUND(SUM(price * units) :: numeric /SUM(units),2),0) AS average_price
 FROM prices p
 LEFT JOIN unitssold u ON p.product_id=u.product_id AND purchase_date >= start_date AND purchase_date <= end_date
@@ -222,28 +222,49 @@ ORDER BY 2 DESC, 1
 </details>
 
 <details>
-  <summary>Queries Quality and Percentage 🔲</summary>  
+  <summary>Queries Quality and Percentage ✅</summary>  
   
   ```sql
-
+SELECT 
+        query_name,
+        ROUND(AVG(rating/position :: numeric),2) AS quality,
+        ROUND(COUNT(CASE WHEN rating < 3 THEN 1 END) / COUNT(rating) :: numeric * 100,2) AS poor_query_percentage
+FROM queries
+GROUP BY 1
   ```
 
 </details>
 
 <details>
-  <summary>Monthly Transactions I 🔲</summary>  
+  <summary>Monthly Transactions I ✅</summary>  
   
   ```sql
-
+SELECT
+    TO_CHAR(DATE_TRUNC('month', trans_date), 'YYYY-MM') AS month,
+    country,
+    COUNT(id) AS trans_count,
+    COUNT(CASE WHEN state = 'approved' THEN 1  END) AS approved_count,
+    SUM(amount) AS trans_total_amount,
+    SUM(CASE WHEN state = 'approved' THEN amount ELSE 0 END) AS approved_total_amount
+FROM transactions
+GROUP BY 1,2
   ```
 
 </details>
 
 <details>
-  <summary>Immediate Food Delivery II 🔲</summary>  
+  <summary>Immediate Food Delivery II ✅</summary>  
   
   ```sql
-
+WITH a AS (
+SELECT *,
+        CASE WHEN order_date = customer_pref_delivery_date THEN 'immediate' ELSE 'scheduled' END AS status,
+        CASE WHEN order_date = (MIN(order_date) OVER (PARTITION BY customer_id ORDER BY order_date)) THEN 'first order' END AS is_first_order
+FROM delivery
+)
+SELECT
+    ROUND(COUNT(CASE WHEN status = 'immediate' AND is_first_order = 'first order' THEN 1 END) :: numeric / COUNT(CASE WHEN is_first_order = 'first order' THEN 1 END) * 100,2) AS immediate_percentage
+FROM a
   ```
 
 </details>
@@ -260,10 +281,12 @@ ORDER BY 2 DESC, 1
 **4. Sorting and Grouping**
 
 <details>
-  <summary>Number of Unique Subjects Taught by Each Teacher 🔲</summary>  
+  <summary>Number of Unique Subjects Taught by Each Teacher ✅</summary>  
   
   ```sql
-
+SELECT teacher_id, COUNT(DISTINCT subject_id) AS cnt
+FROM teacher
+GROUP BY 1
   ```
 
 </details>
